@@ -29,7 +29,8 @@ const optArticleSelector = '.post',
   optTitleSelector = '.post-title',
   optTitleListSelector = '.titles',
   optArticleTagsSelector = '.post-tags .list',
-  optArticleAuthorSelector = '.post-author';
+  optArticleAuthorSelector = '.post-author',
+  optTagsListSelector = '.tags.list';
 
 function generateTitleLinks(customSelector = ''){
   /*[DONE] remove contents of titleList */
@@ -63,6 +64,8 @@ generateTitleLinks();
 /*GENERATE TAGS*/
 
 function generateTags() {
+  /* [NEW] create a new variable allTags with an empty array */
+  let allTags = [];
   /* [DONE]find all articles */
   const articles = document.querySelectorAll(optArticleSelector);
   /* [DONE] START LOOP: for every article: */
@@ -81,6 +84,11 @@ function generateTags() {
         const tagHTML = '<li><a href="#tag-' + tag + '"><span>' + tag + '</span></a></li>';
         /* [DONE] add generated code to html variable */
         html = html + ' ' + tagHTML;
+        /* [NEW] check if this link is NOT already in allTags */
+          if(allTags.indexOf(tagHTML) == -1){
+          /* [NEW] add generated code to allTags array */
+          allTags.push(tagHTML);
+          }
         /* [DONE] END LOOP: for each tag */
       }
     /* [DONE] insert HTML of all the links into the tags wrapper */
@@ -88,6 +96,10 @@ function generateTags() {
     tagsList.innerHTML = html;
     /* [DONE] END LOOP: for every article: */
     }
+  /* [NEW] find list of tags in right column */
+  const tagList = document.querySelector(optTagsListSelector);
+  /* [NEW] add html from allTags to tagList */
+  tagList.innerHTML = allTags.join(' ');
 }
 generateTags();
 
@@ -172,7 +184,7 @@ function authorClickHandler(event){
     for (let activeAuthor of activeAuthors) {
       /*[DONE] remove class active */
       activeAuthor.classList.remove('active');
-    /*[DONE] END LOOP: for each active author link */
+      /*[DONE] END LOOP: for each active author link */
     }
   /*[DONE] find all author links with "href" attribute equal to the "href" constant */
   const authorLinks = document.querySelectorAll('a[href^="#author-' + href + '"]');
