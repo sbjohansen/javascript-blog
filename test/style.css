@@ -262,7 +262,7 @@ body {
 
 .image {
   -o-object-fit: cover;
-     object-fit: cover;
+  object-fit: cover;
   max-width: 250px;
   height: 100%;
 }
@@ -409,4 +409,4 @@ body {
   .gallery-box {
     padding-right: 0%;
   }
-}/*# sourceMappingURL=style.css.map */
+}
