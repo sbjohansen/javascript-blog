@@ -32,9 +32,10 @@ const optArticleSelector = '.post',
   optArticleAuthorSelector = '.post-author',
   optTagsListSelector = '.tags.list',
   optCloudClassCount = 5,
-  optCloudClassPrefix = 'tag-size-';
+  optCloudClassPrefix = 'tag-size-',
+  optAuthorsListSelector = '.authors.list';
 
-function generateTitleLinks(customSelector = ''){
+function generateTitleLinks(customSelector = '') {
   /*[DONE] remove contents of titleList */
   const titleList = document.querySelector(optTitleListSelector);
   titleList.innerHTML = '';
@@ -65,9 +66,9 @@ generateTitleLinks();
 
 /* tags count */
 
-function calculateTagsParams (tags) {
-  const params = {max: 0, min: 99999};
-  for(let tag in tags){
+function calculateTagsParams(tags) {
+  const params = { max: 0, min: 99999 };
+  for (let tag in tags) {
     params.max = Math.max(tags[tag], params.max);
     params.min = Math.min(tags[tag], params.max);
   }
@@ -78,7 +79,7 @@ function calculateTagClass(count, params) {
   const normalizedCount = count - params.min;
   const normalizedMax = params.max - params.min;
   const percentage = normalizedCount / normalizedMax;
-  const classNumber = Math.floor( percentage * (optCloudClassCount - 1) + 1 );
+  const classNumber = Math.floor(percentage * (optCloudClassCount - 1) + 1);
   return optCloudClassPrefix + classNumber;
 }
 
@@ -108,7 +109,7 @@ function generateTags() {
       /* [DONE] add generated code to html variable */
       html = html + ' ' + tagHTML;
       /* [DONE] check if this link is NOT already in allTags */
-      if(!allTags[tag]) {
+      if (!allTags[tag]) {
         /* [DONE] add tag to allTags object */
         allTags[tag] = 1;
       } else {
@@ -129,7 +130,7 @@ function generateTags() {
   /*tagsParam calculation*/
   const tagsParam = calculateTagsParams(allTags);
   /* [DONE] START LOOP: for each tag in allTags: */
-  for(let tag in allTags){
+  for (let tag in allTags) {
     /* [DONE] generate code of a link and add it to allTagsHTML */
     const tagLinkHTML = '" class="' + calculateTagClass(allTags[tag], tagsParam);
     allTagsHTML += '<li><a href="#tag-' + tag + tagLinkHTML + '">' + tag + ' ' + '</a></li>';
@@ -141,7 +142,7 @@ function generateTags() {
 generateTags();
 
 
-function tagClickHandler(event){
+function tagClickHandler(event) {
   /*[DONE] prevent default action for this event */
   event.preventDefault();
   /*[DONE] make new constant named "clickedElement" and give it the value of "this" */
@@ -170,7 +171,7 @@ function tagClickHandler(event){
   generateTitleLinks('[data-tags~="' + tag + '"]');
 }
 
-function addClickListenersToTags(){
+function addClickListenersToTags() {
   /*[DONE] find all links to tags */
   const tagLinks = document.querySelectorAll('.post-tags a');
   /*[DONE] START LOOP: for each link */
@@ -194,27 +195,50 @@ addClickListenersToTags();
 
 /*[DONE] GENERATE AUTHORS*/
 function generateAuthor() {
+  /* [NEW] create a new variable allAuthors with an empty array */
+  let allAuthors = {};
   /* [DONE]find all articles */
   const articles = document.querySelectorAll(optArticleSelector);
   /* [DONE] START LOOP: for every article: */
   for (let article of articles) {
-    /* [DONE]find author wrapper */
-    const articleAuthorWrapper = article.querySelector(optArticleAuthorSelector);
     /* [DONE] make html variable with empty string */
     let html = '';
     /* [DONE] get author from data-author attribute */
     const articleAuthor = article.getAttribute('data-author');
-    const authorHTML = '<a href="#author-' + articleAuthor + '"><span>' + articleAuthor + '</span></a>';
+
+    const authorHTML = '<li><a href="#author-' + articleAuthor + '"><span>' + articleAuthor + '</span></a></li>';
     html = html + ' ' + authorHTML;
+
+    /* [NEW] check if this link is NOT already in allTags */
+    if (!allAuthors[articleAuthor]) {
+      /* [NEW] add tag to allTags object */
+      allAuthors[articleAuthor] = 1;
+    } else {
+      allAuthors[articleAuthor]++;
+    }
     /* [DONE] insert HTML of link into the author wrapper */
-    articleAuthorWrapper.innerHTML = html;
+    const authorName = article.querySelector(optArticleAuthorSelector);
+    authorName.innerHTML = html;
     /* [DONE] END LOOP: for every article: */
   }
+
+  /* [NEW] find list of authors in right column */
+  const authorsList = document.querySelector(optAuthorsListSelector);
+  /* [NEW] create variable for all links HTML code */
+  let allAuthorsHTML = '';
+  /* [NEW] START LOOP: for each author in allAuthors: */
+  for (let author in allAuthors) {
+    /* [NEW] generate code of a link and add it to allAuthorsHTML */
+    allAuthorsHTML += '<li><a href="#author-' + author + '">' + author + ' (' + allAuthors[author] + ') </a></li>';
+    /* [NEW] END LOOP: for each author in allTags: */
+  }
+  /*[NEW] add HTML from allAuthorsHTML to authorsList */
+  authorsList.innerHTML = allAuthorsHTML;
 }
 generateAuthor();
 
 
-function authorClickHandler(event){
+function authorClickHandler(event) {
   /*[DONE] prevent default action for this event */
   event.preventDefault();
   /*[DONE] make new constant named "clickedElement" and give it the value of "this" */
@@ -243,11 +267,20 @@ function authorClickHandler(event){
   generateTitleLinks('[data-author="' + author + '"]');
 }
 
-function addClickListenersToAuthors(){
+function addClickListenersToAuthors() {
   /*[DONE] find all links to authors */
   const authorLinks = document.querySelectorAll('.post-author a');
   /*[DONE] START LOOP: for each link */
   for (let authorLink of authorLinks) {
+    /*[DONE] add authorClickHandler as event listener for that link */
+    authorLink.addEventListener('click', authorClickHandler);
+    /*[DONE] END LOOP: for each link */
+  }
+
+  /*[DONE] find all links to authors in sidebar list */
+  const authorLinksList = document.querySelectorAll('.list.authors a');
+  /*[DONE] START LOOP: for each link */
+  for (let authorLink of authorLinksList) {
     /*[DONE] add authorClickHandler as event listener for that link */
     authorLink.addEventListener('click', authorClickHandler);
     /*[DONE] END LOOP: for each link */

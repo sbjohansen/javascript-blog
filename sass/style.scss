@@ -34,6 +34,7 @@ body {
   text-transform: uppercase;
   font-family: $font-header;
   font-weight: 600;
+  clear: both;
 
   span {
     text-transform: none;
@@ -126,26 +127,27 @@ body {
 .tag-size-1 {
   font-size: 15px;
   text-decoration: none;
+  color: pink;
 }
 
 .tag-size-2 {
   font-size: 17px;
-
+  color: purple;
 }
 
 .tag-size-3 {
   font-size: 19px;
-
+  color: green;
 }
 
 .tag-size-4 {
   font-size: 21px;
-
+  color: orange;
 }
 
 .tag-size-5 {
   font-size: 22px;
-
+  color: red;
 }
 
 .tags a {
