@@ -147,12 +147,12 @@ function generateTags() {
   const tagsParams = calculateTagsParams(allTags);
   /* [DONE] START LOOP: for each tag in allTags: */
   for (let tag in allTags) {
-    /* [DONE] generate code of a link and add it to allTagsHTML */
-      allTagsData.tags.push({
-      tag: tag,
-      count: allTags[tag],
-      className: calculateTagClass(allTags[tag], tagsParams)
-    });
+  /* [DONE] generate code of a link and add it to allTagsHTML */
+    allTagsData.tags.push({
+    tag: tag,
+    count: allTags[tag],
+    className: calculateTagClass(allTags[tag], tagsParams)
+  });
     /* [DONE] END LOOP: for each tag in allTags: */
   }
   /*[DONE] add HTML from allTagsHTML to tagList */
