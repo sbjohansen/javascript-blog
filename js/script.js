@@ -1,5 +1,17 @@
 'use strict';
 
+/*HANDLEBAR TEMPLATES*/
+
+const templates = {
+  articleLink: Handlebars.compile(document.querySelector('#template-article-link').innerHTML),
+  tagLink: Handlebars.compile(document.querySelector('#template-tag-link').innerHTML),
+  authorLink: Handlebars.compile(document.querySelector('#template-author-link').innerHTML),
+  tagCloudLink: Handlebars.compile(document.querySelector('#template-tagcloud-link').innerHTML),
+  authorListLink: Handlebars.compile(document.querySelector('#template-authorlist-link').innerHTML),
+};
+
+/*OPTIONS OBJECT*/
+
 const opt = {
   articleSelector: '.post',
   titleSelector: '.post-title',
@@ -12,6 +24,7 @@ const opt = {
   authorsListSelector: '.authors.list',
 };
 
+/*TITLE CLICK HANDLER*/
 
 const titleClickHandler = function (event) {
   event.preventDefault();
@@ -53,7 +66,8 @@ function generateTitleLinks(customSelector = '') {
     /*[DONE] get the title from the title element */
     const articleTitle = articleTitleElement.innerHTML;
     /*[DONE] create HTML of the link */
-    const linkHTML = '<li><a href="#' + articleId + '"><span>' + articleTitle + '</span></a></li>';
+    const linkHTMLData = {id: articleId, title: articleTitle};
+    const linkHTML = templates.articleLink(linkHTMLData);
     /*[DONE] insert link into titleList */
     html = html + linkHTML;
   }
@@ -66,8 +80,7 @@ function generateTitleLinks(customSelector = '') {
 }
 generateTitleLinks();
 
-
-/* tags count */
+/* TAGS COUNT */
 
 function calculateTagsParams(tags) {
   const params = { max: 0, min: 99999 };
@@ -85,8 +98,6 @@ function calculateTagClass(count, params) {
   const classNumber = Math.floor(percentage * (opt.cloudClassCount - 1) + 1);
   return opt.cloudClassPrefix + classNumber;
 }
-
-
 
 /*GENERATE TAGS*/
 
@@ -108,7 +119,9 @@ function generateTags() {
     /* [DONE] START LOOP: for each tag */
     for (let tag of articleTagsArray) {
       /* [DONE] generate HTML of the link */
-      const tagHTML = '<li><a href="#tag-' + tag + '"><span>' + tag + '</span></a></li>';
+      //const tagHTML = '<li><a href="#tag-' + tag + '"><span>' + tag + '</span></a></li>';
+      const tagHTMLData = {tag: tag, };
+      const tagHTML = templates.tagLink(tagHTMLData);
       /* [DONE] add generated code to html variable */
       html = html + ' ' + tagHTML;
       /* [DONE] check if this link is NOT already in allTags */
@@ -128,22 +141,27 @@ function generateTags() {
   /* [DONE] find list of tags in right column */
   const tagList = document.querySelector(opt.tagsListSelector);
   /* [DONE] create variable for all links HTML code */
-  let allTagsHTML = '';
+  const allTagsData = {tags: []};
 
   /*tagsParam calculation*/
-  const tagsParam = calculateTagsParams(allTags);
+  const tagsParams = calculateTagsParams(allTags);
   /* [DONE] START LOOP: for each tag in allTags: */
   for (let tag in allTags) {
     /* [DONE] generate code of a link and add it to allTagsHTML */
-    const tagLinkHTML = '" class="' + calculateTagClass(allTags[tag], tagsParam);
-    allTagsHTML += '<li><a href="#tag-' + tag + tagLinkHTML + '">' + tag + ' ' + '</a></li>';
+      allTagsData.tags.push({
+      tag: tag,
+      count: allTags[tag],
+      className: calculateTagClass(allTags[tag], tagsParams)
+    });
     /* [DONE] END LOOP: for each tag in allTags: */
   }
   /*[DONE] add HTML from allTagsHTML to tagList */
-  tagList.innerHTML = allTagsHTML;
+  tagList.innerHTML = templates.tagCloudLink(allTagsData);
+  console.log(allTagsData);
 }
 generateTags();
 
+/*TAG CLICK HANDLER*/
 
 function tagClickHandler(event) {
   /*[DONE] prevent default action for this event */
@@ -174,6 +192,8 @@ function tagClickHandler(event) {
   generateTitleLinks('[data-tags~="' + tag + '"]');
 }
 
+/*TAG CLICK LISTENER*/
+
 function addClickListenersToTags() {
   /*[DONE] find all links to tags */
   const tagLinks = document.querySelectorAll('.post-tags a');
@@ -197,6 +217,7 @@ addClickListenersToTags();
 
 
 /*[DONE] GENERATE AUTHORS*/
+
 function generateAuthor() {
   /* [NEW] create a new variable allAuthors with an empty array */
   let allAuthors = {};
@@ -209,7 +230,9 @@ function generateAuthor() {
     /* [DONE] get author from data-author attribute */
     const articleAuthor = article.getAttribute('data-author');
 
-    const authorHTML = '<li><a href="#author-' + articleAuthor + '"><span>' + articleAuthor + '</span></a></li>';
+    //const authorHTML = '<li><a href="#author-' + articleAuthor + '"><span>' + articleAuthor + '</span></a></li>';
+    const authorHTMLData = {author: articleAuthor};
+    const authorHTML = templates.authorLink(authorHTMLData);
     html = html + ' ' + authorHTML;
 
     /* [NEW] check if this link is NOT already in allTags */
@@ -228,18 +251,21 @@ function generateAuthor() {
   /* [NEW] find list of authors in right column */
   const authorsList = document.querySelector(opt.authorsListSelector);
   /* [NEW] create variable for all links HTML code */
-  let allAuthorsHTML = '';
+  const allAuthorsData = {allAuthors: []};
+
   /* [NEW] START LOOP: for each author in allAuthors: */
   for (let author in allAuthors) {
     /* [NEW] generate code of a link and add it to allAuthorsHTML */
-    allAuthorsHTML += '<li><a href="#author-' + author + '">' + author + ' (' + allAuthors[author] + ') </a></li>';
-    /* [NEW] END LOOP: for each author in allTags: */
+    allAuthorsData.allAuthors.push({
+      author: author,
+    });    /* [NEW] END LOOP: for each author in allTags: */
   }
   /*[NEW] add HTML from allAuthorsHTML to authorsList */
-  authorsList.innerHTML = allAuthorsHTML;
+  authorsList.innerHTML = templates.authorListLink(allAuthorsData);
 }
 generateAuthor();
 
+/*AUTHOR CLICK HANDLER*/
 
 function authorClickHandler(event) {
   /*[DONE] prevent default action for this event */
@@ -269,6 +295,8 @@ function authorClickHandler(event) {
   /*[DONE] execute function "generateTitleLinks" with article selector as argument */
   generateTitleLinks('[data-author="' + author + '"]');
 }
+
+/*AUTHOR CLICK LISTENER*/
 
 function addClickListenersToAuthors() {
   /*[DONE] find all links to authors */
